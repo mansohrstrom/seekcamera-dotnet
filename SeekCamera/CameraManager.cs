@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace SeekCamera
 {
-    public partial class CameraManager
+    public partial class CameraManager : IDisposable
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void EventCallback(IntPtr camera, CameraEventEnum cameraEvent, int status, IntPtr userData);
