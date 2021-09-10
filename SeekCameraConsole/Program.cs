@@ -13,7 +13,6 @@ namespace SeekCameraConsole
 
         public static async Task Main(string[] args)
         {
-
             _cameraManager = new CameraManager();
 
             Console.WriteLine($"Seek Camera version {_cameraManager.GetVersion()}");
@@ -43,7 +42,7 @@ namespace SeekCameraConsole
 
                 if (round % 5 == 0)
                 {
-                    Console.WriteLine("   Collect");
+                    Console.WriteLine("   GCing just to track mem usage...");
                     GC.Collect();
                 }
             }

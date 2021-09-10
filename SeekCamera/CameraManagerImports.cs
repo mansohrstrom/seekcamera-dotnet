@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SeekCamera
 {
@@ -11,10 +7,13 @@ namespace SeekCamera
     {
         [DllImport("libseekcamera", EntryPoint = "seekcamera_version_get_major", CharSet = CharSet.Auto)]
         public static extern int SeekCameraGetMajorVersion();
+
         [DllImport("libseekcamera", EntryPoint = "seekcamera_version_get_minor", CharSet = CharSet.Auto)]
         public static extern int SeekCameraGetMinorVersion();
+
         [DllImport("libseekcamera", EntryPoint = "seekcamera_version_get_patch", CharSet = CharSet.Auto)]
         public static extern int SeekCameraGetPatchVersion();
+
         [DllImport("libseekcamera", EntryPoint = "seekcamera_manager_create", CharSet = CharSet.Auto)]
         public static extern CameraErrorEnum SeekCameraManagerCreate(ref IntPtr cameraManager, uint discoveryMode);
 
