@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -109,14 +110,9 @@ namespace SeekCamera
 
             var raw = SeekFrameGetData(frame);
 
-            var bitmap = new Bitmap((int)width, (int)height, (int)lineStride, PixelFormat.Format32bppArgb, raw);
+            using var bitmap = new Bitmap((int)width, (int)height, (int)lineStride, PixelFormat.Format32bppArgb, raw);
 
-            // This is fishy, need to do something else with raw. Passing the bitmap
-            // outside this method causes Access violation. Creating copy for now.
-            // If I stopwatch the entire event it takes between 0-1 ms, so fairly efficient.
-            var bitmapCopy = new Bitmap(bitmap); 
-
-            _bitmaps.Add(bitmapCopy);
+            _bitmaps.Add(new Bitmap(bitmap));
 
             OnCameraFrameEvent(new CameraFrameEventArgs() { Frame = _framesReceived });
         }

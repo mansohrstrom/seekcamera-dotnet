@@ -13,12 +13,16 @@ namespace SeekCameraConsole
 
         public static async Task Main(string[] args)
         {
-            _cameraManager = new CameraManager();
+            using (_cameraManager = new CameraManager());
 
             Console.WriteLine($"Seek Camera version {_cameraManager.GetVersion()}");
 
             _cameraManager.CameraEvent += OnCameraEvent;
-            _cameraManager.CameraFrameEvent += (s, e) => Console.Write($"[{e.Frame}]");
+            _cameraManager.CameraFrameEvent += (s, e) =>
+                {
+                    Console.CursorLeft = 0;
+                    Console.Write($"Frame: {e.Frame}   ");
+                };
 
             Console.WriteLine("Initializing...");
             var result = _cameraManager.Initialize();
@@ -32,43 +36,40 @@ namespace SeekCameraConsole
             
             var counter = 0;
 
-            for (int round = 1; round < 10; round++)
+            for (int round = 1; round < 5; round++)
             {
                 Console.WriteLine("Round " + round);
 
-                counter = takePics(50, counter, directory);
-
-                await Task.Delay(1000);
-
-                if (round % 5 == 0)
-                {
-                    Console.WriteLine("   GCing just to track mem usage...");
-                    GC.Collect();
-                }
+                counter = takePics(10, counter, directory);
             }
 
-            Console.WriteLine("Done. Generating mp4.");
+            bool generateMP4 = false;
 
-            var process = new Process
+            if (generateMP4)
             {
-                StartInfo = new ProcessStartInfo
+                Console.WriteLine("Done. Generating mp4.");
+
+                var process = new Process
                 {
-                    FileName = "ffmpeg",
-                    Arguments = $"-framerate 5 -i {directory}{Path.DirectorySeparatorChar}img-%04d.jpg {directory}{Path.DirectorySeparatorChar}out.mp4",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = false,
-                    RedirectStandardError = true
-                },
-                EnableRaisingEvents = true
-            };
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "ffmpeg",
+                        Arguments = $"-framerate 5 -i {directory}{Path.DirectorySeparatorChar}img-%04d.jpg {directory}{Path.DirectorySeparatorChar}out.mp4",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = false,
+                        RedirectStandardError = true
+                    },
+                    EnableRaisingEvents = true
+                };
 
-            process.Start();
+                process.Start();
 
-            string processOutput = null;
-            while ((processOutput = process.StandardError.ReadLine()) != null)
-            {
-                Debug.WriteLine(processOutput);
+                string processOutput = null;
+                while ((processOutput = process.StandardError.ReadLine()) != null)
+                {
+                    Debug.WriteLine(processOutput);
+                }
             }
 
             Console.WriteLine("Destroying...");
@@ -109,12 +110,13 @@ namespace SeekCameraConsole
 
             int i = 1;
 
+            Console.WriteLine("Saving images...");
+
             foreach (var item in _cameraManager.Bitmaps())
             {
                 var fileName = Path.Join(directory, $"img-{counter + i++:D4}.jpg");
 
                 item.Save(fileName, ImageFormat.Jpeg);
-                Console.WriteLine($"Image: {fileName}");
             }
 
             return counter + images;

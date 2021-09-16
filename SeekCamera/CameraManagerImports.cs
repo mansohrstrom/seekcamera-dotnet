@@ -13,6 +13,9 @@ namespace SeekCamera
 
         [DllImport("libseekcamera", EntryPoint = "seekcamera_version_get_patch", CharSet = CharSet.Auto)]
         public static extern int SeekCameraGetPatchVersion();
+        
+        [DllImport("libseekcamera", EntryPoint = "seekframe_is_empty", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SeekCameraFrameIsEmpty(IntPtr frame);
 
         [DllImport("libseekcamera", EntryPoint = "seekcamera_manager_create", CharSet = CharSet.Auto)]
         public static extern CameraErrorEnum SeekCameraManagerCreate(ref IntPtr cameraManager, uint discoveryMode);
